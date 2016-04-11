@@ -128,8 +128,8 @@ while True:
 		if typeBateau == "exit":
 			exit()
 
-	position = input("\tOù placez-vous votre {} [XY]: ".format(typeBateau))
-	orientation = input("\tQuelle orientation pour votre {} [H/V]: ".format(typeBateau))
+	position = input("\tOù placez-vous votre {} [XY]: ".format(typeBateau)).upper()
+	orientation = input("\tQuelle orientation pour votre {} [H/V]: ".format(typeBateau)).upper()
 	taille = Bateau.tailleNavires[typeBateau]
 	bateau = Bateau(typeBateau, position, orientation, taille)
 
