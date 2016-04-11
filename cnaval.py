@@ -3,117 +3,134 @@
 # Rosca Alex 4TB
 # cnaval.py – 22.03.16
 
+class Grille():
+	lettre2nombre = { 	"A": 0,
+						"B": 1,
+						"C": 2,
+						"D": 3,
+						"E": 4,
+						"F": 5,
+						"G": 6,
+						"H": 7,
+						"I": 8,
+						"J": 9 }
+
+	def __init__(self, largeur, longueur):
+		self.largeur = largeur
+		self.longueur = longueur
+		self.matrice = [["." for y in range(longueur)] for x in range(largeur)]
+
+	def affiche(self):
+		print("\n   A B C D E F G H I J")
+		for i in range(self.largeur):
+			print(" {} ".format(i), end="")
+
+			for j in range(self.longueur):
+				print(self.matrice[i][j], end=" ")
+			print()
+
+
+
+class Bateau():
+	tailleNavires = { 	"porte-avion"	:5,
+						"croiseur"		:4,
+						"destroyer" 	:3,
+						"sous-marin"	:2	}
+
+	def __init__(self, typeBateau, position, orientation, taille):
+
+		self.typeBateau = typeBateau
+		self.posLarg = int(position[1])
+		self.posLong = Grille.lettre2nombre[position[0]]
+		self.orientation = orientation
+		self.taille = taille
+
+		####### Vérifications #######
+		verifBool = self.verif_orientation()
+		if verifBool is False:
+			print("\nPosition invalide\n")
+			return None
+
+		verifBool = self.verif_collisions()
+		if verifBool is False:
+			print("\nCollision\n")
+			return None
+
+		####### Placement #######
+		if self.orientation == "H":
+			for L in range(self.posLong, self.posLong + self.taille):
+				grille.matrice[self.posLarg][L] = "x"
+
+		elif self.orientation == "V":
+			for l in range(self.posLarg, self.posLarg + self.taille):
+				grille.matrice[l][self.posLong] = "x"
+
+
+	def verif_orientation(self):
+		self.posLarg = int(position[1])
+		self.posLong = Grille.lettre2nombre[position[0]]
+
+		### Vérification du bord + coordonés de fin(pour qu'il soit dans la matrice) ###
+		if self.orientation == "H":
+			if (self.posLong + self.taille > grille.longueur) or (self.posLarg == 0 or self.posLarg == grille.largeur - 1):
+				return False
+
+		elif self.orientation == "V":
+			if (self.posLarg + self.taille > grille.largeur) or (self.posLong == 0 or self.posLong == grille.longueur - 1):
+				return False
+
+		return True
+
+
+	def verif_collisions(self):
+		self.posLarg = int(position[1])
+		self.posLong = Grille.lettre2nombre[position[0]]
+
+		if self.orientation == "H":
+			### Extrémités
+			try:
+				if grille.matrice[self.posLarg][self.posLong - 1] == "x" or grille.matrice[self.posLarg][self.posLong + self.taille] == "x":
+					return False
+			except:
+				pass
+
+			### Côtés
+			for L in range(self.posLong, self.posLong + self.taille):
+				if grille.matrice[self.posLarg + 1][L] == "x" or grille.matrice[self.posLarg - 1][L] == "x":
+					return False
+
+		elif self.orientation == "V":
+			### Extrémités
+			try:
+				if grille.matrice[self.posLarg - 1][self.posLong] == "x" or grille.matrice[self.posLarg + self.taille][self.posLong] == "x":
+					return False
+			except:
+				pass
+
+			### Côtés
+			for l in range(self.posLarg, self.posLarg + self.taille):
+				if grille.matrice[l][self.posLong - 1] == "x" or grille.matrice[l][self.posLong + 1] == "x":
+					return False
+
+		return True
+
+
+
 largeur, longueur = 10, 10
 
-lettre2nombre = { 	"A": 0,
-					"B": 1,
-					"C": 2,
-					"D": 3,
-					"E": 4,
-					"F": 5,
-					"G": 6,
-					"H": 7,
-					"I": 8,
-					"J": 9 }
-
-tailleNavires = { 	"porte-avion"	:5,
-					"croiseur"		:4,
-					"destroyer" 	:3,
-					"sous-marin"	:2 }
-
-def creation_grille(largeur, longueur):
-	grille = [["." for y in range(longueur)] for x in range(largeur)]
-	return grille
-
-
-def affiche_grille(grille, largeur, longueur, placements=None):
-	print("\n   A B C D E F G H I J")
-	for i in range(largeur):
-		print(" {} ".format(i), end="")
-
-		### Affichage matrice ###
-		for j in range (longueur):
-			if placements is None:
-				print(".", end=" ")
-			else:
-				print(grille[i][j], end=" ")
-		print()
-
-
-def placement_bateau(largeur, longueur, bateau, position, orientation, taille):
-	verifBool = verif_orientation(largeur, longueur, bateau, position, orientation, taille)
-	if not verifBool:
-		print("\nPosition invalide\n")
-		return None
-
-	verifBool = verif_collisions(bateau, position, orientation, taille)
-	if not verifBool:
-		print("\nCollision\n")
-		return None
-
-	####### Placement #######
-	posLong = lettre2nombre[position[0]]
-	posLarg = int(position[1])
-
-	if orientation == "H":
-		for L in range(posLong, posLong + taille):
-			grille[posLarg][L] = "x"
-
-	elif orientation == "V":
-		for l in range(posLarg, posLarg + taille):
-			grille[l][posLong] = "x"
-
-
-def verif_orientation(largeur, longueur, bateau, position, orientation, taille):
-	posLong = lettre2nombre[position[0]]
-	posLarg = int(position[1])
-
-	### Vérification du bord + coordonés de fin(dans la matrice) ###
-	if orientation == "H":
-		if (posLong + taille > longueur) or (posLarg == 0 or posLarg == largeur - 1):
-			return False
-
-	elif orientation == "V":
-		if (posLarg + taille > largeur) or (posLong == 0 or posLong == longueur - 1):
-			return False
-
-	return True
-
-
-def verif_collisions(bateau, position, orientation, taille):
-	posLong = lettre2nombre[position[0]]
-	posLarg = int(position[1])
-
-	if orientation == "H":
-		for L in range(posLong, posLong + taille):
-			try:
-				if grille[posLarg - 1][L - 1] == "x" or grille[posLarg + 1][L - 1] == "x" or grille[posLarg - 1][L + 1] == "x" or grille[posLarg + 1][L + 1] == "x":
-					return False
-			except:
-				pass
-
-	elif orientation == "V":
-		for l in range(posLarg, posLarg + taille):
-			try:
-				if grille[l - 1][posLong - 1] == "x" or grille[l + 1][posLong - 1] == "x" or grille[l - 1][posLong + 1] == "x" or grille[l + 1][posLong + 1] == "x":
-					return False
-			except:
-				pass
-
-	return True
-
-
-grille = creation_grille(largeur, longueur)
-affiche_grille(grille, largeur, longueur)
+grille = Grille(largeur, longueur)
+grille.affiche()
 
 while True:
-	bateau = input("\nQuel navire voulez-vous placer [porte-avion / croiseur / destroyer / sous-marin]: ")
-	if bateau == "0":
-		break
+	typeBateau = ""
+	while typeBateau not in Bateau.tailleNavires:
+		typeBateau = input("\nQuel navire voulez-vous placer [porte-avion / croiseur / destroyer / sous-marin]: ")
+		if typeBateau == "exit":
+			exit()
 
-	position = input("\tOù placez-vous votre {} [XY]: ".format(bateau))
-	orientation = input("\tQuelle orientation pour votre {} [H/V]: ".format(bateau))
-	taille = tailleNavires[bateau]
+	position = input("\tOù placez-vous votre {} [XY]: ".format(typeBateau))
+	orientation = input("\tQuelle orientation pour votre {} [H/V]: ".format(typeBateau))
+	taille = Bateau.tailleNavires[typeBateau]
+	bateau = Bateau(typeBateau, position, orientation, taille)
 
-	placement_bateau(largeur, longueur, bateau, position, orientation, taille)
-	affiche_grille(grille, largeur, longueur, "bateaux")
+	grille.affiche()
