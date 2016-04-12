@@ -36,26 +36,32 @@ class Bateau():
 						"croiseur"		:4,
 						"destroyer" 	:3,
 						"sous-marin"	:2	}
+	listeBateaux = []
 
 	def __init__(self, typeBateau, position, orientation, taille):
-
 		self.typeBateau = typeBateau
 		self.posLarg = int(position[1])
 		self.posLong = Grille.lettre2nombre[position[0]]
 		self.orientation = orientation
 		self.taille = taille
 
+
+	def verifier(self):
 		####### Vérifications #######
 		verifBool = self.verif_orientation()
 		if verifBool is False:
 			print("\nPosition invalide\n")
-			return None
+			return False
 
 		verifBool = self.verif_collisions()
 		if verifBool is False:
 			print("\nCollision\n")
-			return None
+			return False
 
+		return True
+
+
+	def placer(self):
 		####### Placement #######
 		if self.orientation == "H":
 			for L in range(self.posLong, self.posLong + self.taille):
@@ -67,9 +73,6 @@ class Bateau():
 
 
 	def verif_orientation(self):
-		self.posLarg = int(position[1])
-		self.posLong = Grille.lettre2nombre[position[0]]
-
 		### Vérification du bord + coordonés de fin(pour qu'il soit dans la matrice) ###
 		if self.orientation == "H":
 			if (self.posLong + self.taille > grille.longueur) or (self.posLarg == 0 or self.posLarg == grille.largeur - 1):
@@ -83,9 +86,6 @@ class Bateau():
 
 
 	def verif_collisions(self):
-		self.posLarg = int(position[1])
-		self.posLong = Grille.lettre2nombre[position[0]]
-
 		if self.orientation == "H":
 			### Extrémités
 			try:
@@ -132,5 +132,9 @@ while True:
 	orientation = input("\tQuelle orientation pour votre {} [H/V]: ".format(typeBateau)).upper()
 	taille = Bateau.tailleNavires[typeBateau]
 	bateau = Bateau(typeBateau, position, orientation, taille)
+
+	if bateau.verifier() == True:
+		bateau.placer()
+		Bateau.listeBateaux.append(bateau)
 
 	grille.affiche()
